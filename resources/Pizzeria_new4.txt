@@ -1,0 +1,80 @@
+CREATE DATABASE pizzeria;
+
+CREATE SCHEMA pizzeria_storage;
+
+CREATE TABLE pizza
+(
+    id         SERIAL PRIMARY KEY,
+    pizza_name VARCHAR(64) NOT NULL
+);
+
+CREATE TABLE ingredient
+(
+    id                 SERIAL PRIMARY KEY,
+    ingredient_name    VARCHAR(64)   NOT NULL,
+    cost_of_ingredient NUMERIC(3, 2) NOT NULL
+);
+
+CREATE TABLE composition_of_pizza
+(
+    id            SERIAL PRIMARY KEY,
+    pizza_id      INT REFERENCES pizza (id),
+    ingredient_id INT REFERENCES ingredient (id)
+);
+
+CREATE TABLE type_of_pizza_dough
+(
+    id         SERIAL PRIMARY KEY,
+    type_dough VARCHAR(32) NOT NULL
+);
+
+CREATE TABLE pizza_size
+(
+    id        SERIAL PRIMARY KEY,
+    size_name VARCHAR(32) NOT NULL
+);
+
+CREATE TABLE role
+(
+    id        SERIAL PRIMARY KEY,
+    role_name VARCHAR(32) NOT NULL
+);
+
+CREATE TABLE delivery_address
+(
+    id                    SERIAL PRIMARY KEY,
+    user_pizzeria_id      INT REFERENCES user_pizzeria (id),
+    delivery_address_name VARCHAR(128) NOT NULL
+);
+
+CREATE TABLE user_pizzeria
+(
+    id           SERIAL PRIMARY KEY,
+    first_name   VARCHAR(64) NOT NULL,
+    last_name    VARCHAR(64) NOT NULL,
+    phone_number VARCHAR(64) NOT NULL,
+    email        VARCHAR(64),
+    role_id      INT REFERENCES role (id),
+    birth_date   DATE
+);
+
+CREATE TABLE user_order_pizza
+(
+    id               SERIAL PRIMARY KEY,
+    user_pizzeria_id INT REFERENCES user_pizzeria (id),
+    date_order       TIMESTAMP     NOT NULL,
+    final_cost_order NUMERIC(5, 2) NOT NULL
+);
+
+CREATE TABLE order_pizza
+(
+    id                          SERIAL PRIMARY KEY,
+    pizza_id                    INT REFERENCES pizza (id),
+    pizza_size_id               INT REFERENCES pizza_size (id),
+    type_of_pizza_dough_id      INT REFERENCES type_of_pizza_dough (id),
+    number_of_pizza             INT           NOT NULL,
+    sum_cost_added_ingredient   NUMERIC(3, 2) NOT NULL,
+    sum_cost_removed_ingredient NUMERIC(3, 2) NOT NULL,
+    cost_of_pizza               NUMERIC(5, 2) NOT NULL,
+    user_order_pizza_id         INT REFERENCES user_order_pizza (id)
+);
