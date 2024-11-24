@@ -1,6 +1,6 @@
 package com.dima.jdbc.starter.dao.implement;
 
-import com.dima.jdbc.starter.dao.interfaceDao.PizzaDao;
+import com.dima.jdbc.starter.dao.PizzaDao;
 import com.dima.jdbc.starter.entity.PizzaEntity;
 import com.dima.jdbc.starter.exception.DaoException;
 import com.dima.jdbc.starter.util.ConnectionManager;
@@ -57,7 +57,7 @@ public class PizzaDaoImpl implements PizzaDao {
             }
             return pizzas;
         } catch (SQLException e) {
-            throw new DaoException(e);
+            throw new DaoException("Can not find all pizzas", e);
         }
     }
 
@@ -72,7 +72,7 @@ public class PizzaDaoImpl implements PizzaDao {
             }
             return Optional.ofNullable(pizza);
         } catch (SQLException e) {
-            throw new DaoException(e);
+            throw new DaoException("Can not find pizza by id", e);
         }
     }
 
@@ -92,7 +92,7 @@ public class PizzaDaoImpl implements PizzaDao {
 
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            throw new DaoException(e);
+            throw new DaoException("Can not update pizza", e);
         }
     }
 
@@ -108,7 +108,7 @@ public class PizzaDaoImpl implements PizzaDao {
             }
             return pizzaEntity;
         } catch (SQLException e) {
-            throw new DaoException(e);
+            throw new DaoException("Can not save pizza", e);
         }
     }
 
@@ -118,8 +118,8 @@ public class PizzaDaoImpl implements PizzaDao {
             preparedStatement.setLong(1, id);
 
             return preparedStatement.executeUpdate() > 0;
-        } catch (SQLException throwables) {
-            throw new DaoException(throwables);
+        } catch (SQLException e) {
+            throw new DaoException("Can not delete pizza",e);
         }
     }
 

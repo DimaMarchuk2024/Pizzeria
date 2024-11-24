@@ -12,6 +12,6 @@ import lombok.*;
 public class PizzaSizeEntity {
 
     private Long id;
-    private String sizeName;
+    private String size;
 
 }

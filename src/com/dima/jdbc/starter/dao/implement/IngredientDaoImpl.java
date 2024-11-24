@@ -1,6 +1,6 @@
 package com.dima.jdbc.starter.dao.implement;
 
-import com.dima.jdbc.starter.dao.interfaceDao.IngredientDao;
+import com.dima.jdbc.starter.dao.IngredientDao;
 import com.dima.jdbc.starter.entity.IngredientEntity;
 import com.dima.jdbc.starter.exception.DaoException;
 import com.dima.jdbc.starter.util.ConnectionManager;
@@ -62,7 +62,7 @@ public class IngredientDaoImpl implements IngredientDao {
             }
             return ingredients;
         } catch (SQLException e) {
-            throw new DaoException(e);
+            throw new DaoException("Can not find all ingredients", e);
         }
     }
 
@@ -77,7 +77,7 @@ public class IngredientDaoImpl implements IngredientDao {
             }
             return Optional.ofNullable(ingredient);
         } catch (SQLException e) {
-            throw new DaoException(e);
+            throw new DaoException("Can not find ingredient by id", e);
         }
     }
 
@@ -100,7 +100,7 @@ public class IngredientDaoImpl implements IngredientDao {
 
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            throw new DaoException(e);
+            throw new DaoException("Can not update ingredient", e);
         }
     }
 
@@ -117,7 +117,7 @@ public class IngredientDaoImpl implements IngredientDao {
             }
             return ingredient;
         } catch (SQLException e) {
-            throw new DaoException(e);
+            throw new DaoException("Can not save ingredient", e);
         }
     }
 
@@ -127,7 +127,7 @@ public class IngredientDaoImpl implements IngredientDao {
             preparedStatement.setLong(1, id);
             return preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
-            throw new DaoException(e);
+            throw new DaoException("Can not delete ingredient", e);
         }
     }
 

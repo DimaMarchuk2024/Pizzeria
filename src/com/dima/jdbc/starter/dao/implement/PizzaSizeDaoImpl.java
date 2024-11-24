@@ -1,6 +1,6 @@
 package com.dima.jdbc.starter.dao.implement;
 
-import com.dima.jdbc.starter.dao.interfaceDao.PizzaSizeDao;
+import com.dima.jdbc.starter.dao.PizzaSizeDao;
 import com.dima.jdbc.starter.entity.PizzaSizeEntity;
 import com.dima.jdbc.starter.exception.DaoException;
 import com.dima.jdbc.starter.util.ConnectionManager;
@@ -13,7 +13,7 @@ import java.util.Optional;
 public class PizzaSizeDaoImpl implements PizzaSizeDao {
 
     private static final String PIZZA_SIZE_ID = "id";
-    private static final String PIZZA_SIZE_NAME = "size_name";
+    private static final String PIZZA_SIZE = "size";
 
     private static PizzaSizeDaoImpl instance;
 
@@ -30,18 +30,18 @@ public class PizzaSizeDaoImpl implements PizzaSizeDao {
             """;
 
     private static final String SAVE_SQL = """
-            INSERT INTO pizza_size (size_name)
+            INSERT INTO pizza_size (size)
             VALUES (?);
                  """;
 
     private static final String UPDATE_SQL = """
             UPDATE pizza_size
-            SET size_name = ?
+            SET size = ?
             WHERE id = ?
             """;
     private static final String FIND_ALL_SQL = """
             SELECT
-            id, size_name
+            id, size
             FROM pizza_size
             """;
     private static final String FIND_BY_ID_SQL = FIND_ALL_SQL + """
@@ -61,7 +61,7 @@ public class PizzaSizeDaoImpl implements PizzaSizeDao {
             }
             return pizzaSizeEntities;
         } catch (SQLException e) {
-            throw new DaoException(e);
+            throw new DaoException("Can not find all pizzas size", e);
         }
     }
 
@@ -76,7 +76,7 @@ public class PizzaSizeDaoImpl implements PizzaSizeDao {
             }
             return Optional.ofNullable(pizzaSizeEntity);
         } catch (SQLException e) {
-            throw new DaoException(e);
+            throw new DaoException("Can not find pizza size by id",e);
         }
     }
 
@@ -84,19 +84,19 @@ public class PizzaSizeDaoImpl implements PizzaSizeDao {
         return PizzaSizeEntity
                 .builder()
                 .id(resultSet.getLong(PIZZA_SIZE_ID))
-                .sizeName(resultSet.getString(PIZZA_SIZE_NAME))
+                .size(resultSet.getString(PIZZA_SIZE))
                 .build();
     }
 
     public void update(PizzaSizeEntity pizzaSizeEntity) {
         try (Connection connection = ConnectionManager.get();
              PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_SQL)) {
-            preparedStatement.setString(1, pizzaSizeEntity.getSizeName());
+            preparedStatement.setString(1, pizzaSizeEntity.getSize());
             preparedStatement.setLong(2, pizzaSizeEntity.getId());
 
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            throw new DaoException(e);
+            throw new DaoException("Can not update pizza size", e);
         }
     }
 
@@ -106,14 +106,14 @@ public class PizzaSizeDaoImpl implements PizzaSizeDao {
             preparedStatement.setLong(1, id);
             return preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
-            throw new DaoException(e);
+            throw new DaoException("Can not delete pizza size", e);
         }
     }
 
     public PizzaSizeEntity save(PizzaSizeEntity pizzaSizeEntity) {
         try (Connection connection = ConnectionManager.get();
              PreparedStatement preparedStatement = connection.prepareStatement(SAVE_SQL, Statement.RETURN_GENERATED_KEYS)) {
-            preparedStatement.setString(1, pizzaSizeEntity.getSizeName());
+            preparedStatement.setString(1, pizzaSizeEntity.getSize());
 
             preparedStatement.executeUpdate();
             ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
@@ -122,7 +122,7 @@ public class PizzaSizeDaoImpl implements PizzaSizeDao {
             }
             return pizzaSizeEntity;
         } catch (SQLException e) {
-            throw new DaoException(e);
+            throw new DaoException("Can not save pizza size", e);
         }
     }
 }

@@ -1,6 +1,6 @@
 package com.dima.jdbc.starter.dao.implement;
 
-import com.dima.jdbc.starter.dao.interfaceDao.TypeOfPizzaDoughDao;
+import com.dima.jdbc.starter.dao.TypeOfPizzaDoughDao;
 import com.dima.jdbc.starter.entity.TypeOfPizzaDoughEntity;
 import com.dima.jdbc.starter.exception.DaoException;
 import com.dima.jdbc.starter.util.ConnectionManager;
@@ -61,7 +61,7 @@ public class TypeOfPizzaDoughDaoImpl implements TypeOfPizzaDoughDao {
             }
             return typeOfPizzaDoughEntities;
         } catch (SQLException e) {
-            throw new DaoException(e);
+            throw new DaoException("Can not find all types of pizza dough", e);
         }
     }
 
@@ -76,7 +76,7 @@ public class TypeOfPizzaDoughDaoImpl implements TypeOfPizzaDoughDao {
             }
             return Optional.ofNullable(typeOfPizzaDoughEntity);
         } catch (SQLException e) {
-            throw new DaoException(e);
+            throw new DaoException("Can not find type of pizza dough by id",e);
         }
     }
 
@@ -96,7 +96,7 @@ public class TypeOfPizzaDoughDaoImpl implements TypeOfPizzaDoughDao {
 
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            throw new DaoException(e);
+            throw new DaoException("Can not update type of pizza dough", e);
         }
     }
 
@@ -106,7 +106,7 @@ public class TypeOfPizzaDoughDaoImpl implements TypeOfPizzaDoughDao {
             preparedStatement.setLong(1, id);
             return preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
-            throw new DaoException(e);
+            throw new DaoException("Can not delete type of pizza dough", e);
         }
     }
 
@@ -122,7 +122,7 @@ public class TypeOfPizzaDoughDaoImpl implements TypeOfPizzaDoughDao {
             }
             return typeOfPizzaDoughEntity;
         } catch (SQLException e) {
-            throw new DaoException(e);
+            throw new DaoException("Can not save type of pizza dough", e);
         }
     }
 }

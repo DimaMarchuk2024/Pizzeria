@@ -1,6 +1,6 @@
 package com.dima.jdbc.starter.dao.implement;
 
-import com.dima.jdbc.starter.dao.interfaceDao.DeliveryAddressDao;
+import com.dima.jdbc.starter.dao.DeliveryAddressDao;
 import com.dima.jdbc.starter.entity.*;
 import com.dima.jdbc.starter.exception.DaoException;
 import com.dima.jdbc.starter.util.ConnectionManager;
@@ -61,7 +61,7 @@ public class DeliveryAddressDaoImpl implements DeliveryAddressDao {
             }
             return deliveryAddressEntities;
         } catch (SQLException e) {
-            throw new DaoException(e);
+            throw new DaoException("Can not find all delivery addresses", e);
         }
     }
     public Optional<DeliveryAddressEntity> findById(Long id) {
@@ -75,7 +75,7 @@ public class DeliveryAddressDaoImpl implements DeliveryAddressDao {
             }
             return Optional.ofNullable(deliveryAddressEntity);
         } catch (SQLException e) {
-            throw new DaoException(e);
+            throw new DaoException("Can not find delivery address by id", e);
         }
     }
 
@@ -102,7 +102,7 @@ public class DeliveryAddressDaoImpl implements DeliveryAddressDao {
 
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            throw new DaoException(e);
+            throw new DaoException("Can not update delivery address", e);
         }
     }
 
@@ -119,7 +119,7 @@ public class DeliveryAddressDaoImpl implements DeliveryAddressDao {
             }
             return deliveryAddress;
         } catch (SQLException e) {
-            throw new DaoException(e);
+            throw new DaoException("Can not save delivery address", e);
         }
     }
 
@@ -129,7 +129,7 @@ public class DeliveryAddressDaoImpl implements DeliveryAddressDao {
             preparedStatement.setLong(1, id);
             return preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
-            throw new DaoException(e);
+            throw new DaoException("Can not delete delivery address", e);
         }
     }
 }

@@ -1,6 +1,6 @@
 package com.dima.jdbc.starter.dao.implement;
 
-import com.dima.jdbc.starter.dao.interfaceDao.UserPizzeriaDao;
+import com.dima.jdbc.starter.dao.UserPizzeriaDao;
 import com.dima.jdbc.starter.entity.*;
 import com.dima.jdbc.starter.exception.DaoException;
 import com.dima.jdbc.starter.util.ConnectionManager;
@@ -73,9 +73,10 @@ public class UserPizzeriaDaoImpl implements UserPizzeriaDao {
             }
             return userPizzeriaEntities;
         } catch (SQLException e) {
-            throw new DaoException(e);
+            throw new DaoException("Can not find all users pizzeria", e);
         }
     }
+
     public Optional<UserPizzeriaEntity> findById(Long id) {
         try (Connection connection = ConnectionManager.get();
              PreparedStatement preparedStatement = connection.prepareStatement(FIND_BY_ID_SQL)) {
@@ -87,7 +88,7 @@ public class UserPizzeriaDaoImpl implements UserPizzeriaDao {
             }
             return Optional.ofNullable(userPizzeriaEntity);
         } catch (SQLException e) {
-            throw new DaoException(e);
+            throw new DaoException("Can not find user pizzeria by id", e);
         }
     }
 
@@ -122,7 +123,7 @@ public class UserPizzeriaDaoImpl implements UserPizzeriaDao {
 
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            throw new DaoException(e);
+            throw new DaoException("Can not update user pizzeria", e);
         }
     }
 
@@ -132,7 +133,7 @@ public class UserPizzeriaDaoImpl implements UserPizzeriaDao {
             preparedStatement.setLong(1, id);
             return preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
-            throw new DaoException(e);
+            throw new DaoException("Can not delete user pizzeria", e);
         }
     }
 
@@ -153,7 +154,7 @@ public class UserPizzeriaDaoImpl implements UserPizzeriaDao {
             }
             return userPizzeriaEntity;
         } catch (SQLException e) {
-            throw new DaoException(e);
+            throw new DaoException("Can not save user pizzeria", e);
         }
     }
 

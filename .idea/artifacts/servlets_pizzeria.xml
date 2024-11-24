@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="servlets-pizzeria">
+    <output-path>$PROJECT_DIR$/out/artifacts/servlets_pizzeria</output-path>
+    <root id="archive" name="servlets-pizzeria.war">
+      <element id="artifact" artifact-name="jdbc-pizzeria:Web exploded" />
+    </root>
+  </artifact>
+</component>
