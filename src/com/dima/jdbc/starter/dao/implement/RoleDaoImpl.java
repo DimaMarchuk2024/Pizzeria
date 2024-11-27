@@ -1,6 +1,6 @@
 package com.dima.jdbc.starter.dao.implement;
 
-import com.dima.jdbc.starter.dao.interfaceDao.RoleDao;
+import com.dima.jdbc.starter.dao.RoleDao;
 import com.dima.jdbc.starter.entity.RoleEntity;
 import com.dima.jdbc.starter.exception.DaoException;
 import com.dima.jdbc.starter.util.ConnectionManager;
@@ -61,7 +61,7 @@ public class RoleDaoImpl implements RoleDao {
             }
             return roleEntities;
         } catch (SQLException e) {
-            throw new DaoException(e);
+            throw new DaoException("Can not find all roles", e);
         }
     }
 
@@ -76,7 +76,7 @@ public class RoleDaoImpl implements RoleDao {
             }
             return Optional.ofNullable(roleEntity);
         } catch (SQLException e) {
-            throw new DaoException(e);
+            throw new DaoException("Can not find role by id",e);
         }
     }
 
@@ -96,7 +96,7 @@ public class RoleDaoImpl implements RoleDao {
 
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            throw new DaoException(e);
+            throw new DaoException("Can not update role", e);
         }
     }
 
@@ -106,7 +106,7 @@ public class RoleDaoImpl implements RoleDao {
             preparedStatement.setLong(1, id);
             return preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
-            throw new DaoException(e);
+            throw new DaoException("Can not delete role",e);
         }
     }
 
@@ -122,7 +122,7 @@ public class RoleDaoImpl implements RoleDao {
             }
             return roleEntity;
         } catch (SQLException e) {
-            throw new DaoException(e);
+            throw new DaoException("Can not save role", e);
         }
     }
 }

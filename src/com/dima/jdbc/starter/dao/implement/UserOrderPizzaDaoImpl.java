@@ -1,6 +1,6 @@
 package com.dima.jdbc.starter.dao.implement;
 
-import com.dima.jdbc.starter.dao.interfaceDao.UserOrderPizzaDao;
+import com.dima.jdbc.starter.dao.UserOrderPizzaDao;
 import com.dima.jdbc.starter.entity.UserOrderPizzaEntity;
 import com.dima.jdbc.starter.entity.UserPizzeriaEntity;
 import com.dima.jdbc.starter.exception.DaoException;
@@ -68,7 +68,7 @@ public class UserOrderPizzaDaoImpl implements UserOrderPizzaDao {
             }
             return userOrderPizzaEntities;
         } catch (SQLException e) {
-            throw new DaoException(e);
+            throw new DaoException("Can not find all users orders pizzas", e);
         }
     }
 
@@ -83,7 +83,7 @@ public class UserOrderPizzaDaoImpl implements UserOrderPizzaDao {
             }
             return Optional.ofNullable(userOrderPizzaEntity);
         } catch (SQLException e) {
-            throw new DaoException(e);
+            throw new DaoException("Can not find user order pizza by id", e);
         }
     }
 
@@ -112,7 +112,7 @@ public class UserOrderPizzaDaoImpl implements UserOrderPizzaDao {
 
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            throw new DaoException(e);
+            throw new DaoException("Can not update user order pizza", e);
         }
     }
 
@@ -122,7 +122,7 @@ public class UserOrderPizzaDaoImpl implements UserOrderPizzaDao {
             preparedStatement.setLong(1, id);
             return preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
-            throw new DaoException(e);
+            throw new DaoException("Can not delete user order pizza", e);
         }
     }
 
@@ -140,7 +140,7 @@ public class UserOrderPizzaDaoImpl implements UserOrderPizzaDao {
             }
             return userOrderPizzaEntity;
         } catch (SQLException e) {
-            throw new DaoException(e);
+            throw new DaoException("Can not save user order pizza", e);
         }
     }
 }

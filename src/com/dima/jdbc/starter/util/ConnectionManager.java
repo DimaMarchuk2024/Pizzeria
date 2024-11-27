@@ -35,6 +35,11 @@ public final class ConnectionManager {
         sourceConnections = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {
             Connection connection = open();
+            try {
+                connection.setSchema("pizzeria_storage");
+            } catch (SQLException e) {
+                throw new RuntimeException("No connection to schema 'pizzeria_storage'", e);
+            }
             Connection proxyConnection = (Connection) Proxy.newProxyInstance(ConnectionManager.class.getClassLoader(), new Class[]{Connection.class},
                     (proxy, method, args) -> method.getName().equals("close")
                             ? pool.add((Connection) proxy)
@@ -48,7 +53,7 @@ public final class ConnectionManager {
         try {
             return pool.take();
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Connection not taking from pool",e);
         }
     }
 
@@ -60,7 +65,7 @@ public final class ConnectionManager {
                     PropertiesUtil.get(PASSWORD_KEY)
             );
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Connection not started", e);
         }
     }
 
@@ -68,7 +73,7 @@ public final class ConnectionManager {
         try {
             Class.forName("org.postgresql.Driver");
         } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Postgresql driver not loaded", e);
         }
     }
 
@@ -78,7 +83,7 @@ public final class ConnectionManager {
                 sourceConnection.close();
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Close pool connection failed", e);
         }
     }
 }

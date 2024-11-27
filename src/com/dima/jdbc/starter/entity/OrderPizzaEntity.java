@@ -3,6 +3,7 @@ package com.dima.jdbc.starter.entity;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Getter
 @Setter
@@ -14,7 +15,7 @@ import java.math.BigDecimal;
 public class OrderPizzaEntity {
 
     private Long id;
-    private PizzaEntity pizzaEntity;
+    private List<PizzaEntity> listPizzaEntity;
     private PizzaSizeEntity pizzaSizeEntity;
     private TypeOfPizzaDoughEntity typeOfPizzaDoughEntity;
     private Integer numberOfPizza;

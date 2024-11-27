@@ -1,6 +1,6 @@
 package com.dima.jdbc.starter.dao.implement;
 
-import com.dima.jdbc.starter.dao.interfaceDao.OrderPizzaDao;
+import com.dima.jdbc.starter.dao.OrderPizzaDao;
 import com.dima.jdbc.starter.entity.*;
 import com.dima.jdbc.starter.exception.DaoException;
 import com.dima.jdbc.starter.util.ConnectionManager;
@@ -92,7 +92,7 @@ public class OrderPizzaDaoImpl implements OrderPizzaDao {
             }
             return orderPizzaEntities;
         } catch (SQLException e) {
-            throw new DaoException(e);
+            throw new DaoException("Can not find all orders pizzas", e);
         }
     }
     public Optional<OrderPizzaEntity> findById(Long id) {
@@ -106,7 +106,7 @@ public class OrderPizzaDaoImpl implements OrderPizzaDao {
             }
             return Optional.ofNullable(orderPizzaEntity);
         } catch (SQLException e) {
-            throw new DaoException(e);
+            throw new DaoException("Can not find order pizza by id", e);
         }
     }
 
@@ -115,6 +115,9 @@ public class OrderPizzaDaoImpl implements OrderPizzaDao {
                 .builder()
                 .id(resultSet.getLong(PIZZA_ID))
                 .build();
+
+        List<PizzaEntity> listPizza = new ArrayList<>();
+        listPizza.add(pizza);
 
         PizzaSizeEntity pizzaSize = PizzaSizeEntity
                 .builder()
@@ -134,7 +137,7 @@ public class OrderPizzaDaoImpl implements OrderPizzaDao {
         return OrderPizzaEntity
                 .builder()
                 .id(resultSet.getLong(ORDER_PIZZA_ID))
-                .pizzaEntity(pizza)
+                .listPizzaEntity(listPizza)
                 .pizzaSizeEntity(pizzaSize)
                 .typeOfPizzaDoughEntity(typeOfPizzaDough)
                 .numberOfPizza(resultSet.getInt(ORDER_PIZZA_NUMBER_OF_PIZZA))
@@ -148,7 +151,7 @@ public class OrderPizzaDaoImpl implements OrderPizzaDao {
     public void update(OrderPizzaEntity orderPizzaEntity) {
         try (Connection connection = ConnectionManager.get();
              PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_SQL)) {
-            preparedStatement.setLong(1, orderPizzaEntity.getPizzaEntity().getId());
+            preparedStatement.setObject(1, orderPizzaEntity.getListPizzaEntity());
             preparedStatement.setLong(2, orderPizzaEntity.getPizzaSizeEntity().getId());
             preparedStatement.setLong(3, orderPizzaEntity.getTypeOfPizzaDoughEntity().getId());
             preparedStatement.setInt(4, orderPizzaEntity.getNumberOfPizza());
@@ -159,7 +162,7 @@ public class OrderPizzaDaoImpl implements OrderPizzaDao {
 
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            throw new DaoException(e);
+            throw new DaoException("Can not update order pizza", e);
         }
     }
 
@@ -169,14 +172,14 @@ public class OrderPizzaDaoImpl implements OrderPizzaDao {
             preparedStatement.setLong(1, id);
             return preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
-            throw new DaoException(e);
+            throw new DaoException("Can not delete order pizza",e);
         }
     }
 
     public OrderPizzaEntity save(OrderPizzaEntity orderPizzaEntity) {
         try (Connection connection = ConnectionManager.get();
              PreparedStatement preparedStatement = connection.prepareStatement(SAVE_SQL, Statement.RETURN_GENERATED_KEYS)) {
-            preparedStatement.setLong(1, orderPizzaEntity.getPizzaEntity().getId());
+            preparedStatement.setObject(1, orderPizzaEntity.getListPizzaEntity());
             preparedStatement.setLong(2, orderPizzaEntity.getPizzaSizeEntity().getId());
             preparedStatement.setLong(3, orderPizzaEntity.getTypeOfPizzaDoughEntity().getId());
             preparedStatement.setInt(4, orderPizzaEntity.getNumberOfPizza());
@@ -192,7 +195,7 @@ public class OrderPizzaDaoImpl implements OrderPizzaDao {
             }
             return orderPizzaEntity;
         } catch (SQLException e) {
-            throw new DaoException(e);
+            throw new DaoException("Can not save order pizza", e);
         }
     }
 
