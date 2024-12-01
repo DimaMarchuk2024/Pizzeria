@@ -1,6 +1,6 @@
 package com.dima.jdbc.starter.dao.implement;
 
-import com.dima.jdbc.starter.dao.CompositionOfPizza;
+import com.dima.jdbc.starter.dao.CompositionOfPizzaDao;
 import com.dima.jdbc.starter.entity.CompositionOfPizzaEntity;
 import com.dima.jdbc.starter.entity.IngredientEntity;
 import com.dima.jdbc.starter.entity.PizzaEntity;
@@ -12,12 +12,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class CompositionOfPizzaDaoImpl implements CompositionOfPizza {
+public class CompositionOfPizzaDaoImpl implements CompositionOfPizzaDao {
 
     private static final String COMPOSITION_OF_PIZZA_ID = "id";
     private static final String PIZZA_ID = "pizza_id";
+    private static final String PIZZA_NAME = "pizza_name";
     private static final String INGREDIENT_ID = "ingredient_id";
+    private static final String INGREDIENT_NAME = "ingredient_name";
+    private static final String COST_OF_INGREDIENT = "cost_of_ingredient";
     private static CompositionOfPizzaDaoImpl instance;
+
+    List<IngredientEntity> listIngredient;
 
     public static synchronized CompositionOfPizzaDaoImpl getInstance() {
         if (instance == null) {
@@ -44,12 +49,15 @@ public class CompositionOfPizzaDaoImpl implements CompositionOfPizza {
             """;
     private static final String FIND_ALL_SQL = """
             SELECT
-            id, pizza_id,
-            ingredient_id
-            FROM composition_of_pizza
+                   p.pizza_name,
+                   i.ingredient_name,
+                   i.cost_of_ingredient
+            FROM composition_of_pizza c
+                    join ingredient i on i.id = ingredient_id
+                    join pizza p on p.id = c.pizza_id
             """;
     private static final String FIND_BY_ID_SQL = FIND_ALL_SQL + """
-            WHERE id = ?
+            WHERE p.id = ?
             """;
 
     private CompositionOfPizzaDaoImpl() {
@@ -60,7 +68,9 @@ public class CompositionOfPizzaDaoImpl implements CompositionOfPizza {
              PreparedStatement preparedStatement = connection.prepareStatement(FIND_ALL_SQL)) {
             ResultSet resultSet = preparedStatement.executeQuery();
             List<CompositionOfPizzaEntity> compositionOfPizzaEntities = new ArrayList<>();
+
             while (resultSet.next()) {
+                listIngredient = new ArrayList<>();
                 compositionOfPizzaEntities.add(buildCompositionOfPizza(resultSet));
             }
             return compositionOfPizzaEntities;
@@ -75,7 +85,8 @@ public class CompositionOfPizzaDaoImpl implements CompositionOfPizza {
             preparedStatement.setLong(1, id);
             ResultSet resultSet = preparedStatement.executeQuery();
             CompositionOfPizzaEntity compositionOfPizza = null;
-            if (resultSet.next()) {
+            listIngredient = new ArrayList<>();
+            while (resultSet.next()) {
                 compositionOfPizza = buildCompositionOfPizza(resultSet);
             }
             return Optional.ofNullable(compositionOfPizza);
@@ -87,20 +98,19 @@ public class CompositionOfPizzaDaoImpl implements CompositionOfPizza {
     private CompositionOfPizzaEntity buildCompositionOfPizza(ResultSet resultSet) throws SQLException {
         PizzaEntity pizza = PizzaEntity
                 .builder()
-                .id(resultSet.getLong(PIZZA_ID))
+                .pizzaName(resultSet.getString(PIZZA_NAME))
                 .build();
 
         IngredientEntity ingredient = IngredientEntity
                 .builder()
-                .id(resultSet.getLong(INGREDIENT_ID))
+                .ingredientName(resultSet.getString(INGREDIENT_NAME))
+                .costOfIngredient(resultSet.getBigDecimal(COST_OF_INGREDIENT))
                 .build();
 
-        List<IngredientEntity> listIngredient = new ArrayList<>();
         listIngredient.add(ingredient);
 
         return CompositionOfPizzaEntity
                 .builder()
-                .id(resultSet.getLong(COMPOSITION_OF_PIZZA_ID))
                 .pizzaEntity(pizza)
                 .listIngredientEntity(listIngredient)
                 .build();
@@ -110,7 +120,7 @@ public class CompositionOfPizzaDaoImpl implements CompositionOfPizza {
         try (Connection connection = ConnectionManager.get();
              PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_SQL)) {
             preparedStatement.setLong(1, compositionOfPizzaEntity.getPizzaEntity().getId());
-            preparedStatement.setObject(2, compositionOfPizzaEntity.getListIngredientEntity());
+            preparedStatement.setLong(2, compositionOfPizzaEntity.getListIngredientEntity().stream().findAny().orElseThrow().getId());
             preparedStatement.setLong(3, compositionOfPizzaEntity.getId());
 
             preparedStatement.executeUpdate();
@@ -133,7 +143,7 @@ public class CompositionOfPizzaDaoImpl implements CompositionOfPizza {
         try (Connection connection = ConnectionManager.get();
              PreparedStatement preparedStatement = connection.prepareStatement(SAVE_SQL, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setLong(1, compositionOfPizzaEntity.getPizzaEntity().getId());
-            preparedStatement.setObject(2, compositionOfPizzaEntity.getListIngredientEntity());
+            preparedStatement.setLong(2, compositionOfPizzaEntity.getListIngredientEntity().stream().findAny().orElseThrow().getId());
 
             preparedStatement.executeUpdate();
             ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
