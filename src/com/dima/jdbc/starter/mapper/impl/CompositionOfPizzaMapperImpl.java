@@ -23,8 +23,8 @@ public class CompositionOfPizzaMapperImpl implements CompositionOfPizzaMapper {
         return CompositionOfPizzaEntity
                 .builder()
                 .id(dto.getId())
-                .pizzaEntity(dto.getPizzaEntity())
-                .listIngredientEntity(dto.getListIngredientEntity())
+                .pizzaEntity(dto.getPizza())
+                .listIngredientEntity(dto.getListIngredient())
                 .build();
     }
 
@@ -33,8 +33,8 @@ public class CompositionOfPizzaMapperImpl implements CompositionOfPizzaMapper {
         return CompositionOfPizzaDto
                 .builder()
                 .id(entity.getId())
-                .pizzaEntity(entity.getPizzaEntity())
-                .listIngredientEntity(entity.getListIngredientEntity())
+                .pizza(entity.getPizzaEntity())
+                .listIngredient(entity.getListIngredientEntity())
                 .build();
     }
 }

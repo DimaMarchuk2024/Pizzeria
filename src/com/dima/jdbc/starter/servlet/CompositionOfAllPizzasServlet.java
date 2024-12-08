@@ -1,11 +1,10 @@
 package com.dima.jdbc.starter.servlet;
 
 import com.dima.jdbc.starter.dto.CompositionOfPizzaDto;
-import com.dima.jdbc.starter.entity.IngredientEntity;
 import com.dima.jdbc.starter.service.CompositionOfPizzaService;
-import com.dima.jdbc.starter.service.PizzaService;
+import com.dima.jdbc.starter.service.IngredientService;
 import com.dima.jdbc.starter.service.impl.CompositionOfPizzaServiceImpl;
-import com.dima.jdbc.starter.service.impl.PizzaServiceImpl;
+import com.dima.jdbc.starter.service.impl.IngredientServiceImpl;
 import com.dima.jdbc.starter.util.JspHelper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -14,29 +13,22 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 
-@WebServlet("/compositionOfPizza")
-public class FindByIdCompositionOfPizzaServlet extends HttpServlet {
-    private final PizzaService pizzaService = PizzaServiceImpl.getInstance();
+@WebServlet("/compositionOfAllPizzas")
+public class CompositionOfAllPizzasServlet extends HttpServlet {
 
     private final CompositionOfPizzaService compositionOfPizzaService = CompositionOfPizzaServiceImpl.getInstance();
+    IngredientService ingredientService = IngredientServiceImpl.getInstance();
 
-    @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        Long pizzaId = Long.valueOf(req.getParameter("pizzaId"));
+        req.setAttribute("compositionOfAllPizzas", compositionOfPizzaService.findAll());
+        req.setAttribute("listIngredients", ingredientService.findAll());
 
-        req.setAttribute("pizzaById", pizzaService.findById(pizzaId));
-
-        CompositionOfPizzaDto compositionOfPizzaDto = compositionOfPizzaService.findById(pizzaId);
-        List<IngredientEntity> listIngredient = compositionOfPizzaDto.getListIngredient();
-
-        req.setAttribute("compositionOfPizza", listIngredient);
-
-        req.getRequestDispatcher(JspHelper.getPath("compositionOfPizza"))
+        req.getRequestDispatcher(JspHelper.getPath("compositionOfAllPizzas"))
                 .forward(req, resp);
-
-
 
     }
 }
+

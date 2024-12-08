@@ -19,6 +19,7 @@ public class UserPizzeriaDto {
     private String lastName;
     private String phoneNumber;
     private String email;
-    private RoleEntity roleEntity;
+    private String roleName;
     private LocalDate birthDate;
+    private String password;
 }
