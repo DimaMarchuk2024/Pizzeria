@@ -3,6 +3,7 @@ package com.dima.jdbc.starter.service.impl;
 import com.dima.jdbc.starter.dao.implement.PizzaDaoImpl;
 import com.dima.jdbc.starter.dao.PizzaDao;
 import com.dima.jdbc.starter.dto.PizzaDto;
+import com.dima.jdbc.starter.entity.PizzaEntity;
 import com.dima.jdbc.starter.mapper.PizzaMapper;
 import com.dima.jdbc.starter.mapper.impl.PizzaMapperImpl;
 import com.dima.jdbc.starter.service.PizzaService;
@@ -24,14 +25,12 @@ public class PizzaServiceImpl implements PizzaService {
         return instance;
     }
 
-    @Override
     public PizzaDto findById(Long id) {
         return pizzaDao.findById(id)
                 .map(pizzaMapper::toDto)
                 .orElseThrow(() -> new RuntimeException("Can not find pizza by id"));
     }
 
-    @Override
     public List<PizzaDto> findAll() {
         return pizzaDao.findAll()
                 .stream()
@@ -39,17 +38,16 @@ public class PizzaServiceImpl implements PizzaService {
                 .toList();
     }
 
-    @Override
+
     public PizzaDto save(PizzaDto pizzaDto) {
-        return null;
+        PizzaEntity pizzaEntity = pizzaMapper.toEntity(pizzaDto);
+        pizzaDao.save(pizzaEntity);
+        return pizzaDto;
     }
 
-    @Override
     public void update(PizzaDto pizzaDto) {
-
     }
 
-    @Override
     public boolean delete(Long id) {
         return false;
     }

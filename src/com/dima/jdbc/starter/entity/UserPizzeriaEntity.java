@@ -20,6 +20,5 @@ public class UserPizzeriaEntity {
     private String email;
     private RoleEntity roleEntity;
     private LocalDate birthDate;
-
-
+    private String password;
 }
