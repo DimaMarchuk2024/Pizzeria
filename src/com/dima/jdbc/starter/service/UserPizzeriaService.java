@@ -4,8 +4,11 @@ import com.dima.jdbc.starter.dto.PizzaDto;
 import com.dima.jdbc.starter.dto.UserPizzeriaDto;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserPizzeriaService {
+
+    Optional<UserPizzeriaDto> login(String phoneNumber, String password);
 
     UserPizzeriaDto findById(Long id);
 

@@ -49,15 +49,7 @@ public class CompositionOfPizzaServiceImpl implements CompositionOfPizzaService 
     }
 
     public CompositionOfPizzaDto save(CompositionOfPizzaDto compositionOfPizzaDto) {
-        PizzaEntity pizzaEntity = new PizzaEntity();
-        pizzaEntity.setId(pizzaId);
-
-        List<IngredientEntity> listIngredientEntity = new ArrayList<>();
-        listIngredientEntity.add(new IngredientEntity());
-        listIngredientEntity.stream().findAny().orElseThrow().setId(ingredientId);
-
-        compositionOfPizzaDto.setPizza(pizzaEntity);
-        compositionOfPizzaDto.setListIngredient(listIngredientEntity);
+        createPizza(compositionOfPizzaDto);
 
         CompositionOfPizzaEntity compositionOfPizzaEntity = compositionOfPizzaDao.save(compositionOfPizzaMapper
                         .toEntity(compositionOfPizzaDto));
@@ -65,6 +57,13 @@ public class CompositionOfPizzaServiceImpl implements CompositionOfPizzaService 
     }
 
     public void update(CompositionOfPizzaDto compositionOfPizzaDto) {
+        createPizza(compositionOfPizzaDto);
+        compositionOfPizzaDto.setId(id);
+
+        compositionOfPizzaDao.update(compositionOfPizzaMapper.toEntity(compositionOfPizzaDto));
+    }
+
+    private void createPizza(CompositionOfPizzaDto compositionOfPizzaDto) {
         PizzaEntity pizzaEntity = new PizzaEntity();
         pizzaEntity.setId(pizzaId);
 
@@ -74,9 +73,6 @@ public class CompositionOfPizzaServiceImpl implements CompositionOfPizzaService 
 
         compositionOfPizzaDto.setPizza(pizzaEntity);
         compositionOfPizzaDto.setListIngredient(listIngredientEntity);
-        compositionOfPizzaDto.setId(id);
-
-        compositionOfPizzaDao.update(compositionOfPizzaMapper.toEntity(compositionOfPizzaDto));
     }
 
     public boolean delete(Long id) {
