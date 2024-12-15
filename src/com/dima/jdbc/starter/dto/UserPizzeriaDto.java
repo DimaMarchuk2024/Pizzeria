@@ -20,6 +20,6 @@ public class UserPizzeriaDto {
     private String phoneNumber;
     private String email;
     private String roleName;
-    private LocalDate birthDate;
+    private String birthDate;
     private String password;
 }

@@ -13,15 +13,16 @@ import java.util.Optional;
 public class OrderPizzaDaoImpl implements OrderPizzaDao {
 
     private static final String ORDER_PIZZA_ID = "id";
-    private static final String PIZZA_ID = "pizza_id";
-    private static final String PIZZA_SIZE_ID = "pizza_size_id";
-    private static final String TYPE_OF_PIZZA_DOUGH_ID = "type_of_pizza_dough_id";
+    private static final String PIZZA_NAME = "pizza_name";
+    private static final String PIZZA_SIZE = "size";
+    private static final String TYPE_DOUGH = "type_dough";
     private static final String ORDER_PIZZA_NUMBER_OF_PIZZA = "number_of_pizza";
     private static final String ORDER_PIZZA_SUM_COST_ADDED_INGREDIENT = "sum_cost_added_ingredient";
     private static final String ORDER_PIZZA_SUM_COST_REMOVED_INGREDIENT = "sum_cost_removed_ingredient";
     private static final String ORDER_PIZZA_COST_OF_PIZZA = "cost_of_pizza";
-    private static final String USER_ORDER_PIZZA_ID = "user_order_pizza_id";
-
+    private static final String FIRST_NAME = "first_name";
+    private static final String LAST_NAME = "last_name";
+    List<PizzaEntity> listPizza;
     private static OrderPizzaDaoImpl instance;
 
     public static synchronized OrderPizzaDaoImpl getInstance() {
@@ -64,19 +65,25 @@ public class OrderPizzaDaoImpl implements OrderPizzaDao {
             """;
     private static final String FIND_ALL_SQL = """
             SELECT
-            id,
-            pizza_id,
-            pizza_size_id,
-            type_of_pizza_dough_id,
+            op.id,
+            p.pizza_name,
+            ps.size,
+            topd.type_dough,
             number_of_pizza,
             sum_cost_added_ingredient,
             sum_cost_removed_ingredient,
             cost_of_pizza,
-            user_order_pizza_id
-            FROM order_pizza
+            up.first_name,
+            up.last_name
+            FROM order_pizza op
+            join pizza p on p.id = op.pizza_id
+            join pizza_size ps on ps.id = op.pizza_size_id
+            join type_of_pizza_dough topd on topd.id = op.type_of_pizza_dough_id
+            join user_order_pizza uop on uop.id = op.user_order_pizza_id
+            join user_pizzeria up on up.id = uop.user_pizzeria_id
             """;
     private static final String FIND_BY_ID_SQL = FIND_ALL_SQL + """
-            WHERE id = ?
+            WHERE op.id = ?
             """;
 
     private OrderPizzaDaoImpl() {
@@ -87,7 +94,9 @@ public class OrderPizzaDaoImpl implements OrderPizzaDao {
              PreparedStatement preparedStatement = connection.prepareStatement(FIND_ALL_SQL)) {
             ResultSet resultSet = preparedStatement.executeQuery();
             List<OrderPizzaEntity> orderPizzaEntities = new ArrayList<>();
+
             while (resultSet.next()) {
+                listPizza = new ArrayList<>();
                 orderPizzaEntities.add(buildOrderPizza(resultSet));
             }
             return orderPizzaEntities;
@@ -101,7 +110,8 @@ public class OrderPizzaDaoImpl implements OrderPizzaDao {
             preparedStatement.setLong(1, id);
             ResultSet resultSet = preparedStatement.executeQuery();
             OrderPizzaEntity orderPizzaEntity = null;
-            if (resultSet.next()) {
+            listPizza = new ArrayList<>();
+            while (resultSet.next()) {
                 orderPizzaEntity = buildOrderPizza(resultSet);
             }
             return Optional.ofNullable(orderPizzaEntity);
@@ -113,25 +123,30 @@ public class OrderPizzaDaoImpl implements OrderPizzaDao {
     private OrderPizzaEntity buildOrderPizza(ResultSet resultSet) throws SQLException {
         PizzaEntity pizza = PizzaEntity
                 .builder()
-                .id(resultSet.getLong(PIZZA_ID))
+                .pizzaName(resultSet.getString(PIZZA_NAME))
                 .build();
 
-        List<PizzaEntity> listPizza = new ArrayList<>();
         listPizza.add(pizza);
 
         PizzaSizeEntity pizzaSize = PizzaSizeEntity
                 .builder()
-                .id(resultSet.getLong(PIZZA_SIZE_ID))
+                .size(resultSet.getString(PIZZA_SIZE))
                 .build();
 
         TypeOfPizzaDoughEntity typeOfPizzaDough = TypeOfPizzaDoughEntity
                 .builder()
-                .id(resultSet.getLong(TYPE_OF_PIZZA_DOUGH_ID))
+                .typeDough(resultSet.getString(TYPE_DOUGH))
+                .build();
+
+        UserPizzeriaEntity userPizzeria = UserPizzeriaEntity
+                .builder()
+                .firstName(resultSet.getString(FIRST_NAME))
+                .lastName(resultSet.getString(LAST_NAME))
                 .build();
 
         UserOrderPizzaEntity userOrderPizza = UserOrderPizzaEntity
                 .builder()
-                .id(resultSet.getLong(USER_ORDER_PIZZA_ID))
+                .userPizzeriaEntity(userPizzeria)
                 .build();
 
         return OrderPizzaEntity
@@ -151,7 +166,7 @@ public class OrderPizzaDaoImpl implements OrderPizzaDao {
     public void update(OrderPizzaEntity orderPizzaEntity) {
         try (Connection connection = ConnectionManager.get();
              PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_SQL)) {
-            preparedStatement.setObject(1, orderPizzaEntity.getListPizzaEntity());
+            preparedStatement.setLong(1, orderPizzaEntity.getListPizzaEntity().stream().findAny().orElseThrow().getId());
             preparedStatement.setLong(2, orderPizzaEntity.getPizzaSizeEntity().getId());
             preparedStatement.setLong(3, orderPizzaEntity.getTypeOfPizzaDoughEntity().getId());
             preparedStatement.setInt(4, orderPizzaEntity.getNumberOfPizza());
@@ -179,7 +194,7 @@ public class OrderPizzaDaoImpl implements OrderPizzaDao {
     public OrderPizzaEntity save(OrderPizzaEntity orderPizzaEntity) {
         try (Connection connection = ConnectionManager.get();
              PreparedStatement preparedStatement = connection.prepareStatement(SAVE_SQL, Statement.RETURN_GENERATED_KEYS)) {
-            preparedStatement.setObject(1, orderPizzaEntity.getListPizzaEntity());
+            preparedStatement.setLong(1, orderPizzaEntity.getListPizzaEntity().stream().findAny().orElseThrow().getId());
             preparedStatement.setLong(2, orderPizzaEntity.getPizzaSizeEntity().getId());
             preparedStatement.setLong(3, orderPizzaEntity.getTypeOfPizzaDoughEntity().getId());
             preparedStatement.setInt(4, orderPizzaEntity.getNumberOfPizza());
