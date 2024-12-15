@@ -17,8 +17,9 @@ public class UserPizzeriaDaoImpl implements UserPizzeriaDao {
     private static final String USER_PIZZERIA_LAST_NAME = "last_name";
     private static final String USER_PIZZERIA_PHONE_NUMBER = "phone_number";
     private static final String USER_PIZZERIA_EMAIL = "email";
-    private static final String ROLE_ID = "role_id";
+    private static final String ROLE = "role_name";
     private static final String USER_PIZZERIA_BIRTH_DATE = "birth_date";
+    private static final String USER_PIZZERIA_PASSWORD = "password";
 
 
     private static UserPizzeriaDaoImpl instance;
@@ -36,8 +37,16 @@ public class UserPizzeriaDaoImpl implements UserPizzeriaDao {
             """;
 
     private static final String SAVE_SQL = """
-            INSERT INTO user_pizzeria (first_name, last_name, phone_number, email, role_id, birth_date)
-            VALUES (?, ?, ?, ?, ?, ?);
+            INSERT INTO user_pizzeria(
+            first_name,
+            last_name,
+            phone_number,
+            email,
+            role_id,
+            birth_date,
+            password
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?);
             """;
 
     private static final String UPDATE_SQL = """
@@ -48,16 +57,25 @@ public class UserPizzeriaDaoImpl implements UserPizzeriaDao {
             phone_number = ?,
             email = ?,
             role_id = ?,
-            birth_date = ?
+            birth_date = ?,
+            password = ?
             WHERE id = ?
             """;
     private static final String FIND_ALL_SQL = """
             SELECT
-            id, first_name, last_name, phone_number, email, role_id, birth_date
-            FROM user_pizzeria
+                up.id,
+                first_name,
+                last_name,
+                phone_number,
+                email,
+                r.role_name,
+                birth_date,
+                password
+            FROM user_pizzeria up
+             join role r on r.id = up.role_id
             """;
     private static final String FIND_BY_ID_SQL = FIND_ALL_SQL + """
-            WHERE id = ?
+            WHERE up.id = ?
             """;
 
     private UserPizzeriaDaoImpl() {
@@ -95,7 +113,7 @@ public class UserPizzeriaDaoImpl implements UserPizzeriaDao {
     private UserPizzeriaEntity buildUserPizzeria(ResultSet resultSet) throws SQLException {
         RoleEntity role = RoleEntity
                 .builder()
-                .id(resultSet.getLong(ROLE_ID))
+                .roleName(resultSet.getString(ROLE))
                 .build();
 
         return UserPizzeriaEntity
@@ -107,6 +125,7 @@ public class UserPizzeriaDaoImpl implements UserPizzeriaDao {
                 .email(resultSet.getString(USER_PIZZERIA_EMAIL))
                 .roleEntity(role)
                 .birthDate(resultSet.getDate(USER_PIZZERIA_BIRTH_DATE).toLocalDate())
+                .password(resultSet.getString(USER_PIZZERIA_PASSWORD))
                 .build();
     }
 
@@ -119,7 +138,8 @@ public class UserPizzeriaDaoImpl implements UserPizzeriaDao {
             preparedStatement.setString(4, userPizzeriaEntity.getEmail());
             preparedStatement.setLong(5, userPizzeriaEntity.getRoleEntity().getId());
             preparedStatement.setDate(6, Date.valueOf(userPizzeriaEntity.getBirthDate()));
-            preparedStatement.setLong(7, userPizzeriaEntity.getId());
+            preparedStatement.setString(7, userPizzeriaEntity.getPassword());
+            preparedStatement.setLong(8, userPizzeriaEntity.getId());
 
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
@@ -146,6 +166,7 @@ public class UserPizzeriaDaoImpl implements UserPizzeriaDao {
             preparedStatement.setString(4, userPizzeriaEntity.getEmail());
             preparedStatement.setLong(5, userPizzeriaEntity.getRoleEntity().getId());
             preparedStatement.setDate(6, Date.valueOf(userPizzeriaEntity.getBirthDate()));
+            preparedStatement.setString(7, userPizzeriaEntity.getPassword());
 
             preparedStatement.executeUpdate();
             ResultSet generatedKeys = preparedStatement.getGeneratedKeys();

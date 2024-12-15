@@ -16,6 +16,6 @@ import java.util.List;
 public class CompositionOfPizzaDto {
 
     private Long id;
-    private PizzaEntity pizzaEntity;
-    private List<IngredientEntity> listIngredientEntity;
+    private PizzaEntity pizza;
+    private List<IngredientEntity> listIngredient;
 }
