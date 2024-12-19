@@ -78,7 +78,39 @@ public class UserPizzeriaDaoImpl implements UserPizzeriaDao {
             WHERE up.id = ?
             """;
 
+    private static final String GET_BY_PHONE_NUMBER_AND_PASSWORD_SQL = """
+            SELECT
+                up.id,
+                first_name,
+                last_name,
+                phone_number,
+                email,
+                r.role_name,
+                birth_date,
+                password
+            FROM user_pizzeria up
+             join role r on r.id = up.role_id
+             WHERE phone_number = ? AND password = ?
+            """;
+
     private UserPizzeriaDaoImpl() {
+    }
+
+    public Optional<UserPizzeriaEntity> findByPhoneNumberAndPassword(String phoneNumber, String password){
+        try (Connection connection = ConnectionManager.get();
+             PreparedStatement preparedStatement = connection.prepareStatement(GET_BY_PHONE_NUMBER_AND_PASSWORD_SQL)) {
+            preparedStatement.setString(1, phoneNumber);
+            preparedStatement.setString(2, password);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+            UserPizzeriaEntity userPizzeriaEntity = null;
+            if (resultSet.next()) {
+                userPizzeriaEntity = buildUserPizzeria(resultSet);
+            }
+            return Optional.ofNullable(userPizzeriaEntity);
+        } catch (SQLException e) {
+            throw new DaoException("Can not find user pizzeria by phone number and password", e);
+        }
     }
 
     public List<UserPizzeriaEntity> findAll() {

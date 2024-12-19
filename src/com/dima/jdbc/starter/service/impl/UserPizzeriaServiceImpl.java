@@ -17,6 +17,7 @@ import com.dima.jdbc.starter.validator.ValidationResult;
 import com.dima.jdbc.starter.validator.Validator;
 
 import java.util.List;
+import java.util.Optional;
 
 public class UserPizzeriaServiceImpl implements UserPizzeriaService {
     private static UserPizzeriaServiceImpl instance;
@@ -33,6 +34,12 @@ public class UserPizzeriaServiceImpl implements UserPizzeriaService {
             instance = new UserPizzeriaServiceImpl();
         }
         return instance;
+    }
+
+    public Optional<UserPizzeriaDto> login(String phoneNumber, String password) {
+        return userPizzeriaDao.findByPhoneNumberAndPassword(phoneNumber, password)
+                .map(userPizzeriaMapper::toDto);
+//                .orElseThrow(() -> new RuntimeException("Can not find user pizzeria by phone number and password"));
     }
 
     @Override

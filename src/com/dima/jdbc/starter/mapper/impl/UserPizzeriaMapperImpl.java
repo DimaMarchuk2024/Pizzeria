@@ -1,11 +1,19 @@
 package com.dima.jdbc.starter.mapper.impl;
 
+import com.dima.jdbc.starter.dao.RoleDao;
+import com.dima.jdbc.starter.dao.implement.RoleDaoImpl;
 import com.dima.jdbc.starter.dto.UserPizzeriaDto;
 import com.dima.jdbc.starter.entity.RoleEntity;
 import com.dima.jdbc.starter.entity.UserPizzeriaEntity;
 import com.dima.jdbc.starter.mapper.UserPizzeriaMapper;
+import com.dima.jdbc.starter.util.LocalDateFormatter;
+
+import java.time.LocalDate;
+import java.util.stream.Stream;
 
 public class UserPizzeriaMapperImpl implements UserPizzeriaMapper {
+
+    RoleDao roleDao = RoleDaoImpl.getInstance();
 
     private static UserPizzeriaMapperImpl instance;
     private UserPizzeriaMapperImpl() {
@@ -19,12 +27,11 @@ public class UserPizzeriaMapperImpl implements UserPizzeriaMapper {
     }
     @Override
     public UserPizzeriaEntity toEntity(UserPizzeriaDto dto) {
-
-        RoleEntity roleEntity = RoleEntity
-                .builder()
-                .id(1L)
-                .roleName(dto.getRoleName())
-                .build();
+        RoleEntity roleEntity = roleDao.findAll()
+                .stream()
+                .filter(role -> dto.getRoleName().equals(role.getRoleName()))
+                .findAny()
+                .orElseThrow();
 
         return UserPizzeriaEntity
                 .builder()
@@ -34,7 +41,7 @@ public class UserPizzeriaMapperImpl implements UserPizzeriaMapper {
                 .phoneNumber(dto.getPhoneNumber())
                 .email(dto.getEmail())
                 .roleEntity(roleEntity)
-                .birthDate(dto.getBirthDate())
+                .birthDate(LocalDateFormatter.format(dto.getBirthDate()))
                 .password(dto.getPassword())
                 .build();
     }
@@ -49,7 +56,7 @@ public class UserPizzeriaMapperImpl implements UserPizzeriaMapper {
                 .phoneNumber(entity.getPhoneNumber())
                 .email(entity.getEmail())
                 .roleName(entity.getRoleEntity().getRoleName())
-                .birthDate(entity.getBirthDate())
+                .birthDate(String.valueOf(entity.getBirthDate()))
                 .password(entity.getPassword())
                 .build();
     }
